@@ -1,0 +1,12 @@
+{
+  "name": "hello",
+  "loop": false,
+  "steps": [
+    {
+      "gesture": "stand_test"
+    },
+    {
+      "wait_ms": 500
+    }
+  ]
+}

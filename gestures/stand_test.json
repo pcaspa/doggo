@@ -1,0 +1,11 @@
+{
+  "name": "stand_test",
+  "type": "pose_sequence",
+  "steps": [
+    {
+      "pose": "stand",
+      "speed": 300,
+      "delay_ms": 1000
+    }
+  ]
+}

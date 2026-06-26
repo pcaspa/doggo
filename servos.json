@@ -1,0 +1,86 @@
+{
+  "1": {
+    "name": "LF_shoulder",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": 1
+  },
+  "2": {
+    "name": "LF_hip",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": 1
+  },
+  "3": {
+    "name": "LF_knee",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": 1
+  },
+  "4": {
+    "name": "RF_shoulder",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": -1
+  },
+  "5": {
+    "name": "RF_hip",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": -1
+  },
+  "6": {
+    "name": "RF_knee",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": -1
+  },
+  "7": {
+    "name": "LH_shoulder",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": 1
+  },
+  "8": {
+    "name": "LH_hip",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": 1
+  },
+  "9": {
+    "name": "LH_knee",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": 1
+  },
+  "10": {
+    "name": "RH_shoulder",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": -1
+  },
+  "11": {
+    "name": "RH_hip",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": -1
+  },
+  "12": {
+    "name": "RH_knee",
+    "min": 1000,
+    "home": 2048,
+    "max": 3000,
+    "sign": -1
+  }
+}
