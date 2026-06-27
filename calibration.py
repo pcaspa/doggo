@@ -32,7 +32,7 @@ def _move_raw(controller, servo_id, position, speed=200):
     )
 
 
-def run_calibration():
+def run_calibration(servo_id=None):
     controller = ServoController.__new__(ServoController)
     from scservo_sdk import PortHandler, PacketHandler
     from config import PORT, BAUD
@@ -48,13 +48,23 @@ def run_calibration():
         raise RuntimeError(f"Failed to set baud rate {BAUD}")
 
     try:
-        _do_calibration(controller)
+        _do_calibration(controller, servo_id)
     finally:
         controller.port.closePort()
 
 
-def _do_calibration(controller):
+def _do_calibration(controller, single_servo_id=None):
     print("\n=== Servo Calibration Wizard ===\n")
+
+    # Load existing config for single-servo recalibration
+    existing = {}
+    if single_servo_id is not None:
+        try:
+            from utils import load_json
+            existing = load_json(SERVO_CONFIG)
+        except FileNotFoundError:
+            print(f"No existing {SERVO_CONFIG} found. Run full calibration first.")
+            return
 
     # Step 1: Scan
     print("Scanning servos...\n")
@@ -64,19 +74,35 @@ def _do_calibration(controller):
         print("No servos found. Check wiring and power.")
         return
 
-    print("Found:\n")
-    for sid, model in found:
-        print(f"  ID {sid}")
+    if single_servo_id is not None:
+        if single_servo_id not in [sid for sid, _ in found]:
+            print(f"Servo {single_servo_id} not found on bus.")
+            return
+        servo_ids = [single_servo_id]
+        print(f"Recalibrating servo {single_servo_id}\n")
+        # Build available joints: exclude joints already assigned to OTHER servos
+        taken = set()
+        for sid, cfg in existing.items():
+            if int(sid) != single_servo_id:
+                name = cfg.get("name", "")
+                if name in JOINT_NAMES:
+                    taken.add(name)
+        available_joints = [(i, n) for i, n in enumerate(JOINT_NAMES, 1) if n not in taken]
+    else:
+        print("Found:\n")
+        for sid, model in found:
+            print(f"  ID {sid}")
 
-    print()
-    resp = input("Continue? (Y/N): ").strip().upper()
-    if resp != "Y":
-        print("Calibration cancelled.")
-        return
+        print()
+        resp = input("Continue? (Y/N): ").strip().upper()
+        if resp != "Y":
+            print("Calibration cancelled.")
+            return
 
-    servo_ids = [sid for sid, _ in found]
-    available_joints = list(enumerate(JOINT_NAMES, 1))
-    result = {}
+        servo_ids = [sid for sid, _ in found]
+        available_joints = list(enumerate(JOINT_NAMES, 1))
+
+    result = dict(existing)
 
     for servo_id in servo_ids:
         print(f"\n--- Servo {servo_id} ---\n")
@@ -110,22 +136,20 @@ def _do_calibration(controller):
         home = _read_raw_position(controller, servo_id)
         print(f"\n  Home = {home}\n")
 
-        # Step 4: Minimum
-        print("Move to MINIMUM safe angle.")
+        # Step 4: First limit
+        print("Move to one end of the safe range.")
         input("Press ENTER when ready...")
-        min_pos = _read_raw_position(controller, servo_id)
-        print(f"\n  Min = {min_pos}\n")
+        limit_a = _read_raw_position(controller, servo_id)
+        print(f"\n  Limit A = {limit_a}\n")
 
-        # Step 5: Maximum
-        print("Move to MAXIMUM safe angle.")
+        # Step 5: Second limit
+        print("Move to the OTHER end of the safe range.")
         input("Press ENTER when ready...")
-        max_pos = _read_raw_position(controller, servo_id)
-        print(f"\n  Max = {max_pos}\n")
+        limit_b = _read_raw_position(controller, servo_id)
+        print(f"\n  Limit B = {limit_b}\n")
 
-        # Ensure min < max
-        if min_pos > max_pos:
-            min_pos, max_pos = max_pos, min_pos
-            print("  (Swapped min/max to keep min < max)\n")
+        min_pos = min(limit_a, limit_b, home)
+        max_pos = max(limit_a, limit_b, home)
 
         # Step 6: Determine direction
         print("Move the joint back to centre for direction test.")

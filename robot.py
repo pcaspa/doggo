@@ -233,7 +233,8 @@ def build_parser():
     b = behaviour_sub.add_parser("show")
     b.add_argument("name")
 
-    sub.add_parser("calibrate")
+    cal = sub.add_parser("calibrate")
+    cal.add_argument("--servo", type=int, default=None)
 
     gait = sub.add_parser("gait")
     gait_sub = gait.add_subparsers(dest="gait_cmd", required=True)
@@ -259,7 +260,7 @@ def main():
     args = parser.parse_args()
 
     if args.cmd == "calibrate":
-        run_calibration()
+        run_calibration(servo_id=args.servo)
     elif args.cmd == "servo":
         cmd_servo(args)
     elif args.cmd == "pose":
