@@ -12,6 +12,7 @@ from behaviour_manager import (
     play_behaviour, list_behaviours, show_behaviour
 )
 from gait_generator import generate_crawl, generate_trot
+from calibration import run_calibration
 
 def cmd_servo(args):
     c = ServoController()
@@ -221,6 +222,8 @@ def build_parser():
     b = behaviour_sub.add_parser("show")
     b.add_argument("name")
 
+    sub.add_parser("calibrate")
+
     gait = sub.add_parser("gait")
     gait_sub = gait.add_subparsers(dest="gait_cmd", required=True)
 
@@ -244,7 +247,9 @@ def main():
     parser = build_parser()
     args = parser.parse_args()
 
-    if args.cmd == "servo":
+    if args.cmd == "calibrate":
+        run_calibration()
+    elif args.cmd == "servo":
         cmd_servo(args)
     elif args.cmd == "pose":
         cmd_pose(args)
