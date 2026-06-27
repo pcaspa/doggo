@@ -2,7 +2,7 @@ import argparse
 import sys
 
 from servo_controller import ServoController
-from pose_manager import save_pose, play_pose, list_poses, show_pose
+from pose_manager import save_pose, save_home_pose, play_pose, list_poses, show_pose
 from gesture_manager import (
     new_gesture, add_pose_step, build_gesture_interactive, play_gesture,
     list_gestures, show_gesture, reverse_gesture, speed_gesture, mirror_gesture
@@ -50,10 +50,19 @@ def cmd_servo(args):
 
 def cmd_pose(args):
     if args.pose_cmd == "save":
+        if args.servo_ids == ["all"]:
+            from utils import load_json
+            from config import SERVO_CONFIG
+            args.servo_ids = [int(x) for x in load_json(SERVO_CONFIG).keys()]
+        else:
+            args.servo_ids = [int(x) for x in args.servo_ids]
         save_pose(args.name, args.servo_ids)
 
     elif args.pose_cmd == "play":
         play_pose(args.name, speed=args.speed)
+
+    elif args.pose_cmd == "home":
+        save_home_pose()
 
     elif args.pose_cmd == "list":
         for p in list_poses():
@@ -151,11 +160,13 @@ def build_parser():
 
     p = pose_sub.add_parser("save")
     p.add_argument("name")
-    p.add_argument("servo_ids", nargs="+", type=int)
+    p.add_argument("servo_ids", nargs="+")
 
     p = pose_sub.add_parser("play")
     p.add_argument("name")
     p.add_argument("--speed", type=int, default=300)
+
+    pose_sub.add_parser("home")
 
     pose_sub.add_parser("list")
 

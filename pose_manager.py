@@ -1,5 +1,5 @@
 import os
-from config import POSE_DIR, DEFAULT_SPEED
+from config import POSE_DIR, SERVO_CONFIG, DEFAULT_SPEED
 from utils import ensure_dirs, load_json, save_json
 from servo_controller import ServoController
 
@@ -51,6 +51,19 @@ def play_pose(name, speed=DEFAULT_SPEED):
         controller.close()
 
     print(f"Played pose: {name}")
+
+def save_home_pose():
+    servos = load_json(SERVO_CONFIG)
+    servo_ids = [int(x) for x in servos.keys()]
+    positions = {sid: cfg["home"] for sid, cfg in servos.items()}
+
+    pose = {
+        "name": "home",
+        "servo_ids": servo_ids,
+        "positions": positions,
+    }
+
+    save_json(pose_path("home"), pose)
 
 def show_pose(name):
     pose = load_pose(name)

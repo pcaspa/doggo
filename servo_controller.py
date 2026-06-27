@@ -46,11 +46,7 @@ class ServoController:
         return value
 
     def read_position(self, servo_id):
-        pos = self.read2(servo_id, ADDR_PRESENT_POSITION)
-        if pos is None:
-            return None
-        limits = self.get_limits(servo_id)
-        return clamp(pos, limits["min"], limits["max"])
+        return self.read2(servo_id, ADDR_PRESENT_POSITION)
 
     def move_servo(self, servo_id, position, speed=DEFAULT_SPEED):
         limits = self.get_limits(servo_id)
