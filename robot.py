@@ -45,6 +45,10 @@ def cmd_servo(args):
             c.torque(args.servo_id, False)
             print(f"Torque OFF for servo {args.servo_id}")
 
+        elif args.servo_cmd == "torque-off-all":
+            c.torque_off_all()
+            print("Torque OFF for all servos.")
+
     finally:
         c.close()
 
@@ -154,6 +158,8 @@ def build_parser():
 
     s = servo_sub.add_parser("torque-off")
     s.add_argument("servo_id", type=int)
+
+    servo_sub.add_parser("torque-off-all")
 
     pose = sub.add_parser("pose")
     pose_sub = pose.add_subparsers(dest="pose_cmd", required=True)

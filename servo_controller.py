@@ -68,6 +68,10 @@ class ServoController:
         self.torque(servo_id, True)
         return self.move_servo(servo_id, limits["home"])
 
+    def torque_off_all(self):
+        for sid in self.config.keys():
+            self.torque(int(sid), False)
+
     def home_all(self):
         for sid, cfg in self.config.items():
             self.torque(int(sid), True)
